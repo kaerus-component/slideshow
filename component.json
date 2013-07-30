@@ -1,0 +1,17 @@
+{
+  "name": "slideshow",
+  "version": "0.1.0",
+  "description": "Slideshow",
+  "repo": "kaerus-component/slideshow",
+  "scripts": [
+    "index.js",
+    "template.js"
+  ],
+  "styles": [
+  	"style.css"
+  ],
+  "dependencies":{
+  	"kaerus-component/carousel":"*"
+  },
+  "license": "Apache2_0"
+}

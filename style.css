@@ -1,0 +1,154 @@
+.slideshow {
+    font-weight: bold;
+    border: 1px solid #afafaf;
+    padding: 0;
+    background-color: white;
+    margin: 0 auto;
+    margin-bottom: 2em;
+    position: relative;
+    overflow: hidden;
+    height: 20em;
+    width: 35em;
+    border-radius: 0.1em;
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;
+    -o-user-select: none;      
+    user-select: none;
+}
+
+.slideshow .nextSlide, 
+.slideshow .prevSlide {
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    position: absolute;
+    top: 9em;
+    line-height: 3em;
+    width: 3em;
+    height: 3em;
+    text-align: center;
+    border-radius: 2em;
+    color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.4);
+    z-index: 10;
+}
+
+.slideshow .nextSlide {
+    right: 2em;
+}
+
+.slideshow .prevSlide {
+    left: 2em;
+}
+
+.slideshow .navSlide {
+    font-size: 2em;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: rgba(255,255,255,0.4);
+    z-index: 10;
+}
+
+.slideshow .navSlide .dot {
+    width: 0.5em;
+    text-align: center;
+    display: inline-block;
+    list-style-type: none;
+}
+
+.slideshow .navSlide .dot:before {
+    content: "\0025cb";
+}
+
+.slideshow .navSlide .dot.active:before {
+    content: "\0025cf";
+}
+
+.slideshow .navSlide ul{
+    text-align: center;
+    -webkit-padding-start: 0;
+    margin: 0 auto;
+}
+
+.slideshow .slides {
+    display: none;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width:100%;
+    height:100%;
+
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1;
+
+    -webkit-transition-property: left;
+    -moz-transition-property: left;
+    -ms-transition-property: left;
+    -o-transition-property: left;
+    transition-property: left;
+
+    -webkit-transition-duration: 1s;
+    -moz-transition-duration: 1s;
+    -ms-transition-duration: 1s;
+    -o-transition-duration: 1s;
+    transition-duration: 1s;
+
+    -webkit-transition-timing-function: cubic-bezier(0.1,0.7,0.7,1);
+    -moz-transition-timing-function: cubic-bezier(0.1,0.7,0.7,1);
+    -ms-transition-timing-function: cubic-bezier(0.1,0.7,0.7,1);
+    -o-transition-timing-function: cubic-bezier(0.1,0.7,0.7,1);
+    transition-timing-function: cubic-bezier(0.1,0.7,0.7,1);
+
+    -webkit-transform: translate3d(0,0,0);
+    -moz-transform: translate3d(0,0,0);
+    -ms-transform: translate3d(0,0,0);
+    -o-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+}
+
+.slideshow .slides img {
+    width: 100%;
+    height: 100%;
+}
+
+.slideshow .slides span.caption {
+    position: absolute;
+    display: block;
+    left: 2em;
+    top: 2em;
+    padding: 1em;
+    color: white;
+    background: rgba(0,0,12,0.2);
+    box-shadow: inset 0 0 4px #ddF;
+    z-index: 10;
+    border-radius: 0.2em;
+}
+
+.slideshow .slides.show~.slide {
+    left: 100%;
+}
+
+.slideshow .slides.prev,
+.slideshow .slides.next,
+.slideshow .slides.show {
+    display: block;
+}
+
+.slideshow .slides.next {
+    left: 100% !important;
+}
+
+.slideshow .slides.prev {
+    left: -100% !important;
+}
+
+.slideshow .slides.show {
+    left:0;
+    overflow:visible;
+    z-index: 2;
+}
