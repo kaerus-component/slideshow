@@ -18,17 +18,19 @@ Slideshow.prototype = (function(){
 		template: template,
 		next:'&rang;',
 		prev:'&lang;',
-		speed: 4000
+        time: 4000,
+        beforeTransit: undefined,
+        afterTransit: undefined
 	}, carousel;
 
 	SSproto = {
 		init: function(container,options){
-			slideshow.id = this.id;
-
 			if(typeof container === 'string')
                 container = document.getElementById(container);
 
             if(!container) throw new Error("invalid slideshow container");
+
+            slideshow.id = this.id;
 
             mergeOptions(slideshow,options);
 
@@ -37,7 +39,36 @@ Slideshow.prototype = (function(){
             return this;		
         },
         start: function(){
-            carousel.start(0,slideshow.speed);
+            carousel.start(0,slideshow.time);
+
+            return this.display(true);
+        },
+        stop: function(){
+            carousel.stop();
+
+            return this;
+        },
+        pause: function(){
+            carousel.pause();
+
+            return this;
+        },
+        resume: function(){
+            carousel.resume;
+
+            return this;
+        },
+        show: function(x){
+            carousel.show(x);
+
+            return this;
+        },
+        display: function(value){
+            var slides = document.getElementById(slideshow.id);
+
+            if(typeof value === 'string') slides.style.display = value;
+            else if(!!value) slides.style.display = 'block';
+            else slides.style.display = 'none';
 
             return this;
         }
@@ -75,28 +106,36 @@ Slideshow.prototype = (function(){
         /* create carousel */
         carousel = new Carousel(slideshow.id);
 
-        /* add UI handlers */
-        addNavHandler(document.getElementById(navId));
-        addButtonHandler(document.getElementById(slideshow.id+'next'),'next');
-        addButtonHandler(document.getElementById(slideshow.id+'prev'),'prev');
-        addPauseHandler(document.getElementById(slideshow.id));
+        attachHandlers();
     }
 
-    /* add click handlers to next prev buttons */
+    function attachHandlers(){
+        var slides = document.getElementById(slideshow.id),
+            nav = document.getElementById(slideshow.id+'nav'),
+            next = document.getElementById(slideshow.id+'next'),
+            prev = document.getElementById(slideshow.id+'prev');
+        
+        /* add slidshow UI handlers */
+        addNavHandler(nav);
+        addPauseHandler(slides);
+        addTransitionHandler(nav);
+        addTransitionEndHandler(slides);
+        addButtonHandler(next,'next');
+        addButtonHandler(prev,'prev');
+    }
+
     function addButtonHandler(elem,button){
-        elem.addEventListener('click',function(event){
+        addEvent(elem,'click',function(event){
             carousel[button]();
             event.stopPropagation();
         });	
     }
 
-    /* add click handler to nav dots */
     function addNavHandler(elem){
         var nav = document.getElementById(slideshow.id+'nav'),
-            dots = elem.getElementsByTagName('li'),
             matchNav = new RegExp(elem.id + '(\\d+)');
 
-        elem.addEventListener('click', function(event){
+        addEvent(elem,'click', function(event){
             event = event ? event : window.event;
             var target = event.target || event.srcElement,
                 ix = matchNav.exec(target.id);
@@ -106,18 +145,6 @@ Slideshow.prototype = (function(){
                 event.stopPropagation();
             }	
         });
-
-        /* display active dot */
-        carousel.onChange = function(index,from){
-
-            if(from !== undefined){
-                dots[from].className = "dot";
-            }
-
-            dots[index].className = "active dot";
-
-            carousel.transit(index,from);
-        }
     }
 
     /* adds click handler on slide to toggle pause */
@@ -131,8 +158,48 @@ Slideshow.prototype = (function(){
         });
     }
 
+    function addTransitionHandler(nav){
+        var dots = nav.getElementsByTagName('li');
+
+        carousel.onChange = function(index,from){
+            if(from !== undefined){
+                dots[from].className = "dot";
+            }
+            
+            dots[index].className = "active dot";
+
+            if(typeof slideshow.beforeTransit === 'function') slideshow.beforeTransit();
+            
+            carousel.transit(index,from);
+        }
+    }
+
+    function addTransitionEndHandler(elem){
+        var te;
+
+        if((te = hasTransitionEndEvent())){
+            addEvent(elem,te,function(elem){
+                if(typeof slideshow.afterTransit ==='function') slideshow.afterTransit();
+            });
+            slideshow.hasTransitionEndEvent = true;
+        } else {
+            slideshow.hasTransitionEndEvent = false;
+        }
+    }
+
     return SSproto;
 }());
+
+function hasTransitionEndEvent(){
+    var transitionEndEvents = ['transitionend', 'webkitTransitionEnd', 'otransitionend'],
+        hasTev;
+
+    hasTev = transitionEndEvents.filter(function(m){
+        return ('on'+m.toLowerCase()) in window
+    });
+
+    return hasTev[0];
+}
 
 function mergeOptions(target,source){
     for(var key in source) {
@@ -140,6 +207,16 @@ function mergeOptions(target,source){
     }
     
     return target;
+}
+
+function addEvent(el,ev,fn,cap){
+    if(el.addEventListener){
+        el.addEventListener(ev, fn, !!cap);
+    } else if (elm.attachEvent){
+        el.attachEvent('on' + ev, fn);
+    }  else el['on' + ev] = fn;
+
+    return el;
 }
 
 

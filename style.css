@@ -72,10 +72,14 @@
     margin: 0 auto;
 }
 
+.slideshow .slides {
+    display: none;
+}
+
 .slideshow .slides .slide{
+    position: absolute;
     overflow: hidden;
     display: none;
-    position: absolute;
     top: 0;
     left: -100%;
     width:100%;
