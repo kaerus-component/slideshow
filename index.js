@@ -1,6 +1,6 @@
 var Carousel = require('carousel'),
-	template = require('./template'),
-	id = 0;
+    template = require('./template'),
+    id = 0;
 
 function Slideshow(container,options){
 	
@@ -26,115 +26,112 @@ Slideshow.prototype = (function(){
 			slideshow.id = this.id;
 
 			if(typeof container === 'string')
-        		container = document.getElementById(container);
+                container = document.getElementById(container);
 
-        	if(!container) throw new Error("invalid slideshow container");
+            if(!container) throw new Error("invalid slideshow container");
 
-        	mergeOptions(slideshow,options);
+            mergeOptions(slideshow,options);
 
-        	setup(container);
-       	
-        	return this;		
-		},
-		start: function(){
-			carousel.start(0,slideshow.speed);
+            setup(container);
 
-			return this;
-		}
+            return this;		
+        },
+        start: function(){
+            carousel.start(0,slideshow.speed);
 
-	}
+            return this;
+        }
+    }
 
-	function setup(container){
-		var slides = '\n', 
-			dots = '\n', 
-			navId = slideshow.id + 'nav';
+    function setup(container){
+        var slides = '\n', 
+            dots = '\n', 
+            navId = slideshow.id + 'nav',
+            childs = container.childNodes;
 
-		var childs = container.childNodes;
+        /* get slides from parent container */
+        for(var i = 0, n = 0, l = childs.length; i < l; i++){
+            if(childs[i].nodeType === 1){ 
+                slides+= '<div id="'+ slideshow.id + 's' + n + '">' + childs[i].outerHTML + '</div>\n';
+                dots+='<li class="dot" id="' + navId + n + '"></li>\n';
+                n++;
+            }    
+        }
 
-		/* get slides from parent container */
-	    for(var i = 0, n = 0, l = childs.length; i < l; i++){
-	        if(childs[i].nodeType === 1){ 
-	            slides+= '<div id="'+ slideshow.id + 's' + n + '">' + childs[i].outerHTML + '</div>\n';
-				dots+='<li class="dot" id="' + navId + n + '"></li>\n';
-				n++;
-	        }    
-	    }
+        var template = slideshow.template.replace(/{\w+}/mg,function(m){
+            switch(m){
+                case "{id}": return slideshow.id;
+                case "{slides}": return slides;
+                case "{next}": return slideshow.next;
+                case "{prev}": return slideshow.prev; 
+                case "{nav}": return dots;
+            }
+        });
 
-		var template = slideshow.template.replace(/{\w+}/mg,function(m){
-			switch(m){
-				case "{id}": return slideshow.id;
-				case "{slides}": return slides;
-				case "{next}": return slideshow.next;
-				case "{prev}": return slideshow.prev; 
-				case "{nav}": return dots;
-			}
-		});
+        /* apply slider template */
+        container.innerHTML = template;
+        container.className = 'slideshow';
 
-		/* apply slider template */
-		container.innerHTML = template;
-		container.className = 'slideshow';
-		
-		/* create carousel */
-		carousel = new Carousel(slideshow.id);
+        /* create carousel */
+        carousel = new Carousel(slideshow.id);
 
-		/* add UI handlers */
-		addNavHandler(document.getElementById(navId));
-		addButtonHandler(document.getElementById(slideshow.id+'next'),'next');
-		addButtonHandler(document.getElementById(slideshow.id+'prev'),'prev');
-		addPauseHandler(document.getElementById(slideshow.id));
-	}
+        /* add UI handlers */
+        addNavHandler(document.getElementById(navId));
+        addButtonHandler(document.getElementById(slideshow.id+'next'),'next');
+        addButtonHandler(document.getElementById(slideshow.id+'prev'),'prev');
+        addPauseHandler(document.getElementById(slideshow.id));
+    }
 
-	/* add click handlers to next prev buttons */
-	function addButtonHandler(elem,button){
-		elem.addEventListener('click',function(event){
-			carousel[button]();
-			event.stopPropagation();
-		});	
-	}
+    /* add click handlers to next prev buttons */
+    function addButtonHandler(elem,button){
+        elem.addEventListener('click',function(event){
+            carousel[button]();
+            event.stopPropagation();
+        });	
+    }
 
-	/* add click handler to nav dots */
-	function addNavHandler(elem){
-		var nav = document.getElementById(slideshow.id+'nav');
-		var matchNav = new RegExp(elem.id + '(\\d+)');
+    /* add click handler to nav dots */
+    function addNavHandler(elem){
+        var nav = document.getElementById(slideshow.id+'nav'),
+            dots = elem.getElementsByTagName('li'),
+            matchNav = new RegExp(elem.id + '(\\d+)');
 
-		elem.addEventListener('click', function(event){
-			event = event ? event : window.event;
-			var target = event.target || event.srcElement;
-			var ix = matchNav.exec(target.id);
-			
-			if(ix) {
-				carousel.show(ix[1]);
-				event.stopPropagation();
-			}	
-		});
+        elem.addEventListener('click', function(event){
+            event = event ? event : window.event;
+            var target = event.target || event.srcElement,
+                ix = matchNav.exec(target.id);
 
-		var dots = elem.getElementsByTagName('li');
+            if(ix) {
+                carousel.show(ix[1]);
+                event.stopPropagation();
+            }	
+        });
 
-		/* display active dot */
-		carousel.onChange = function(index,from){
-			
-			if(from !== undefined){
-				dots[from].className = "dot";
-			}
+        /* display active dot */
+        carousel.onChange = function(index,from){
 
-			dots[index].className = "active dot";
+            if(from !== undefined){
+                dots[from].className = "dot";
+            }
 
-			carousel.transit(index,from);
-		}
-	}
+            dots[index].className = "active dot";
 
-	/* adds click handler on slide to toggle pause */
-	function addPauseHandler(elem){
-		elem.addEventListener('click',function(event){
-			if(carousel.paused) {
-				carousel.resume();
-			} else {
-				carousel.pause();
-			}
-		});
-	}
+            carousel.transit(index,from);
+        }
+    }
 
-	return SSproto;
+    /* adds click handler on slide to toggle pause */
+    function addPauseHandler(elem){
+        elem.addEventListener('click',function(event){
+            if(carousel.paused) {
+                carousel.resume();
+            } else {
+                carousel.pause();
+            }
+        });
+    }
+
+    return SSproto;
 }());
 
 function mergeOptions(target,source){
