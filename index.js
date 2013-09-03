@@ -7,43 +7,41 @@ var transitionProp = ['webkitTransition','mozTransition','msTransition','oTransi
 
 
 function Slideshow(container,options){
-	
 	if(!(this instanceof Slideshow))
 		return new Slideshow(container,options);
 
-	this.id = 'slideshow' + id++;
+    if(typeof container === 'string')
+        container = document.getElementById(container);
 
-	this.init(container,options);
-}
+    if(!container) throw new Error("invalid slideshow container");
 
-Slideshow.prototype = (function(){
-	var slideshow = {
-		id: undefined,
-		template: template,
-		next:'&rang;',
-		prev:'&lang;',
+    var settings = {
+        id: 'slideshow' + id,
+        template: template,
+        next:'&rang;',
+        prev:'&lang;',
         time: 4000,
         transition: ['all','1s'],
         beforeTransit: undefined,
         afterTransit: undefined
-	}, carousel;
+    };
+ 
+    mergeOptions(settings,options);
+    mergeOptions(this,settings);
 
-    var self;
+	this.init(container);
+}
+
+Slideshow.prototype = (function(){
+	var carousel, slideshow;
 
 	SSproto = {
 		init: function(container,options){
-			if(typeof container === 'string')
-                container = document.getElementById(container);
-
-            if(!container) throw new Error("invalid slideshow container");
-
-            slideshow.id = this.id;
-
-            mergeOptions(slideshow,options);
+            slideshow = this;
 
             setup(container);
 
-            return self = this;		
+            return this;		
         },
         start: function(){
             carousel.start(0,slideshow.time);
@@ -106,6 +104,7 @@ Slideshow.prototype = (function(){
             }    
         }
 
+        /* create dom structure from template */
         var template = slideshow.template.replace(/{\w+}/mg,function(m){
             switch(m){
                 case "{id}": return slideshow.id;
@@ -118,9 +117,11 @@ Slideshow.prototype = (function(){
 
         /* apply slider template */
         container.innerHTML = template;
-        container.className = 'slideshow';
+        /* add slideshow class to target container */
+        if(!container.className) container.className = 'slideshow';
+        else container.className+= ' slideshow';
 
-        /* create carousel */
+        /* create newcarousel instance */
         carousel = new Carousel(slideshow.id);
 
         attachHandlers();        
@@ -213,18 +214,17 @@ Slideshow.prototype = (function(){
 
             if(from !== undefined){
                 dots[from].className = "dot";
+                /* apply transitions after first slide */
+                /* to avoid animations on startup */
                 if(!slideshow.hasTransitions){
                     for(var i = 0, l = carousel.slides.length; i < l; i++)
                         applyStyle(slideshow.id + 's' + i,transitionProp,slideshow.transition);
                     slideshow.hasTransitions = true;
                 }
-                carousel.transit(index,from);
-            } else {
-                carousel.transit(index,from); 
-                self.display(true);
             }
             
             dots[index].className = "active dot";
+            carousel.transit(index,from);
         }
     }
 
