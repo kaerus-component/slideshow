@@ -2,6 +2,10 @@ var Carousel = require('carousel'),
     template = require('./template'),
     id = 0;
 
+var transitionProp = ['webkitTransition','mozTransition','msTransition','oTransition'],
+    transformProp = ['webkitTransform','mozTransform','msTransoform','oTransform'];
+
+
 function Slideshow(container,options){
 	
 	if(!(this instanceof Slideshow))
@@ -19,9 +23,12 @@ Slideshow.prototype = (function(){
 		next:'&rang;',
 		prev:'&lang;',
         time: 4000,
+        transition: ['all','1s'],
         beforeTransit: undefined,
         afterTransit: undefined
 	}, carousel;
+
+    var self;
 
 	SSproto = {
 		init: function(container,options){
@@ -36,12 +43,12 @@ Slideshow.prototype = (function(){
 
             setup(container);
 
-            return this;		
+            return self = this;		
         },
         start: function(){
             carousel.start(0,slideshow.time);
 
-            return this.display(true);
+            return this;
         },
         stop: function(){
             carousel.stop();
@@ -50,6 +57,16 @@ Slideshow.prototype = (function(){
         },
         pause: function(){
             carousel.pause();
+
+            return this;
+        },
+        next: function(){
+            carousel.next();
+
+            return this;
+        },
+        previous: function(){
+            carousel.prev();
 
             return this;
         },
@@ -106,7 +123,7 @@ Slideshow.prototype = (function(){
         /* create carousel */
         carousel = new Carousel(slideshow.id);
 
-        attachHandlers();
+        attachHandlers();        
     }
 
     function attachHandlers(){
@@ -114,7 +131,7 @@ Slideshow.prototype = (function(){
             nav = document.getElementById(slideshow.id+'nav'),
             next = document.getElementById(slideshow.id+'next'),
             prev = document.getElementById(slideshow.id+'prev');
-        
+
         /* add slidshow UI handlers */
         addNavHandler(nav);
         addPauseHandler(slides);
@@ -122,6 +139,36 @@ Slideshow.prototype = (function(){
         addTransitionEndHandler(slides);
         addButtonHandler(next,'next');
         addButtonHandler(prev,'prev');
+    }
+
+    function applyStyle(elem,prop,attr){
+        var style = '';
+
+        if(typeof elem === 'string')
+            elem = document.getElementById(elem);
+
+        if(!elem) return;
+
+        if(Array.isArray.prop){
+            prop = getStyleProperty(prop);
+        }
+
+        if(!prop) return;
+
+        if(typeof attr == 'string'){
+            style = attr;
+        }
+        if(Array.isArray(attr)){
+            style = attr.join(' ');
+        } else if(typeof attr === 'object'){
+            style = Object.keys(attr).reduce(function(a,b){
+                return !a ? attr[b] : a + ' ' + attr[b]
+            },null);
+        } else if(typeof attr === 'function'){
+            style = attr(elem.id);
+        }
+          
+        elem.style[prop] = style; 
     }
 
     function addButtonHandler(elem,button){
@@ -162,15 +209,22 @@ Slideshow.prototype = (function(){
         var dots = nav.getElementsByTagName('li');
 
         carousel.onChange = function(index,from){
+            if(typeof slideshow.beforeTransit === 'function') slideshow.beforeTransit();
+
             if(from !== undefined){
                 dots[from].className = "dot";
+                if(!slideshow.hasTransitions){
+                    for(var i = 0, l = carousel.slides.length; i < l; i++)
+                        applyStyle(slideshow.id + 's' + i,transitionProp,slideshow.transition);
+                    slideshow.hasTransitions = true;
+                }
+                carousel.transit(index,from);
+            } else {
+                carousel.transit(index,from); 
+                self.display(true);
             }
             
             dots[index].className = "active dot";
-
-            if(typeof slideshow.beforeTransit === 'function') slideshow.beforeTransit();
-            
-            carousel.transit(index,from);
         }
     }
 
@@ -189,6 +243,20 @@ Slideshow.prototype = (function(){
 
     return SSproto;
 }());
+
+transitionProp = getStyleProperty(transitionProp);
+transformProp = getStyleProperty(transformProp);
+
+function getStyleProperty(props){
+    var root = document.documentElement, 
+        prop;
+
+    prop = props.filter(function(p){
+        return p in root.style
+    });
+
+    return prop[0]
+}
 
 function hasTransitionEndEvent(){
     var transitionEndEvents = ['transitionend', 'webkitTransitionEnd', 'otransitionend'],
