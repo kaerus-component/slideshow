@@ -1,15 +1,15 @@
-TARGET = ./build
-NAME = slideshow
-
 all: build
 
 build: dependencies standalone
 	@echo "Building component "
-	@component build -v -o $(TARGET)
+	@component build -v
 
 standalone: 
 	@echo "Building standalone version"
-	@component build -v -o $(TARGET) -n $(NAME)
+	@component build -v -n slideshow
+
+gem: standalone
+	@make -C ./gem all
 
 dependencies:
 	@component install -v   
@@ -19,6 +19,7 @@ distclean:
 	@rm -rf ./node_modules
 	@rm -rf ./components
 	@rm -rf ./build
+	@make -C ./gem distclean
 
 
 .PHONY: all
