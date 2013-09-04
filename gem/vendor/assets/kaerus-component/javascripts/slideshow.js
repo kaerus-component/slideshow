@@ -1,3 +1,4 @@
+;(function(){
 
 /**
  * Require the given path.
@@ -715,3 +716,10 @@ module.exports = '<div class="slides" id="{id}">{slides}</div>\n<div class="next
 });
 require.alias("kaerus-component-carousel/index.js", "slideshow/deps/carousel/index.js");
 require.alias("kaerus-component-carousel/index.js", "carousel/index.js");
+if (typeof exports == "object") {
+  module.exports = require("slideshow");
+} else if (typeof define == "function" && define.amd) {
+  define(function(){ return require("slideshow"); });
+} else {
+  this["Slideshow"] = require("slideshow");
+}})();

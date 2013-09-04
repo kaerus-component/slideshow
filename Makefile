@@ -6,7 +6,7 @@ build: dependencies standalone
 
 standalone: 
 	@echo "Building standalone version"
-	@component build -v -n slideshow
+	@component build -v -n slideshow -s Slideshow
 
 gem: standalone
 	@make -C ./gem all
