@@ -3,7 +3,7 @@ var Carousel = require('carousel'),
     id = 0;
 
 var transitionProp = ['webkitTransition','mozTransition','msTransition','oTransition'],
-    transformProp = ['webkitTransform','mozTransform','msTransoform','oTransform'];
+    transformProp = ['webkitTransform','mozTransform','msTransform','oTransform'];
 
 
 function Slideshow(container,options){
@@ -210,7 +210,7 @@ Slideshow.prototype = (function(){
         var dots = nav.getElementsByTagName('li');
 
         carousel.onChange = function(index,from){
-            if(typeof slideshow.beforeTransit === 'function') slideshow.beforeTransit();
+            if(typeof slideshow.beforeTransit === 'function') slideshow.beforeTransit(index, slideshow);
 
             if(from !== undefined){
                 dots[from].className = "dot";
@@ -232,8 +232,15 @@ Slideshow.prototype = (function(){
         var te;
 
         if((te = hasTransitionEndEvent())){
-            addEvent(elem,te,function(elem){
-                if(typeof slideshow.afterTransit ==='function') slideshow.afterTransit();
+            addEvent(elem,te,function(event){
+                event = event ? event : window.event;
+                var target = event.target || event.srcElement,
+                    target_id = slideshow.id + 's' + carousel.index;
+                // fixme: fires twice
+                if(target.id === target_id && typeof slideshow.afterTransit ==='function'){ 
+                    slideshow.afterTransit(carousel.index, slideshow);
+                    
+                }   
             });
             slideshow.hasTransitionEndEvent = true;
         } else {
