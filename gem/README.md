@@ -38,8 +38,7 @@ $(document).ready(function(){
     		time:8000,		
     		next:'&#xf054;',
     		prev:'&#xf053;',
-    		beforeTransit: function(slideshow,index){ console.log("transition start", index)},
-    		afterTransit: function(slideshow,index){ console.log("transition end", index)},
+    		beforeTransit: function(index,slideshow){ console.log("transition start", index)},
     		transition: ['left','1s']  
     	}).start();	  
 	} catch (err) {
@@ -47,6 +46,8 @@ $(document).ready(function(){
     }    
 });
 ```
+
+You can use ```beforeTransit(index, slideshow)``` callback as a hook to your application.
 
 ## Customization
 Override stylesheet rules.
