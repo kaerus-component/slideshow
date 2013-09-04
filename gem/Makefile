@@ -3,10 +3,10 @@ all: build
 	
 build: 
 	@echo "Building gem"
-	@mkdir -p vendor/assets/kaerus-component/javascripts
-	@mkdir -p vendor/assets/kaerus-component/stylesheets
-	@cp $(SOURCE).js vendor/assets/kaerus-component/javascripts
-	@cp $(SOURCE).css vendor/assets/kaerus-component/stylesheets
+	@mkdir -p vendor/assets/javascripts
+	@mkdir -p vendor/assets/stylesheets
+	@cp $(SOURCE).js vendor/assets/javascripts
+	@cp $(SOURCE).css vendor/assets/stylesheets
 	@gem build kaerus-component-slideshow.gemspec
 
 distclean:
