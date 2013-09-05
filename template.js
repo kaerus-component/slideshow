@@ -1,1 +1,1 @@
-module.exports = '<div class="slides" id="{id}">{slides}</div>\n<div class="nextSlide" id="{id}next">{next}</div>\n<div class="prevSlide" id="{id}prev">{prev}</div>\n<div class="navSlide" id="{id}nav"><ul>{nav}</ul></div>\n	';
+module.exports = '<div class="slides" id="{id}-slides">{slides}</div>\n<div class="nextSlide" id="{id}-next">{next}</div>\n<div class="prevSlide" id="{id}-prev">{prev}</div>\n<div class="navSlide" id="{id}-nav"><ul>{nav}</ul></div>\n	';

@@ -1,8 +1,8 @@
 var Carousel = require('carousel'),
-    template = require('./template'),
-    id = 0;
+    template = require('./template');
 
 var transitionProp = ['webkitTransition','mozTransition','msTransition','oTransition'],
+    transitionEndEvents = ['transitionend', 'webkitTransitionEnd', 'otransitionend'],
     transformProp = ['webkitTransform','mozTransform','msTransform','oTransform'];
 
 
@@ -16,7 +16,7 @@ function Slideshow(container,options){
     if(!container) throw new Error("invalid slideshow container");
 
     var settings = {
-        id: 'slideshow' + id,
+        id: container.id || 'slideshow',
         template: template,
         next:'&rang;',
         prev:'&lang;',
@@ -92,13 +92,13 @@ Slideshow.prototype = (function(){
     function setup(container){
         var slides = '\n', 
             dots = '\n', 
-            navId = slideshow.id + 'nav',
+            navId = slideshow.id + '-nav',
             childs = container.childNodes;
 
         /* get slides from parent container */
         for(var i = 0, n = 0, l = childs.length; i < l; i++){
             if(childs[i].nodeType === 1){ 
-                slides+= '<div id="'+ slideshow.id + 's' + n + '">' + childs[i].outerHTML + '</div>\n';
+                slides+= '<div id="'+ slideshow.id + '-s' + n + '">' + childs[i].outerHTML + '</div>\n';
                 dots+='<li class="dot" id="' + navId + n + '"></li>\n';
                 n++;
             }    
@@ -122,16 +122,16 @@ Slideshow.prototype = (function(){
         else container.className+= ' slideshow';
 
         /* create newcarousel instance */
-        carousel = new Carousel(slideshow.id);
+        carousel = new Carousel(slideshow.id+'-slides');
 
         attachHandlers();        
     }
 
     function attachHandlers(){
-        var slides = document.getElementById(slideshow.id),
-            nav = document.getElementById(slideshow.id+'nav'),
-            next = document.getElementById(slideshow.id+'next'),
-            prev = document.getElementById(slideshow.id+'prev');
+        var slides = document.getElementById(slideshow.id+'-slides'),
+            nav = document.getElementById(slideshow.id+'-nav'),
+            next = document.getElementById(slideshow.id+'-next'),
+            prev = document.getElementById(slideshow.id+'-prev');
 
         /* add slidshow UI handlers */
         addNavHandler(nav);
@@ -180,7 +180,7 @@ Slideshow.prototype = (function(){
     }
 
     function addNavHandler(elem){
-        var nav = document.getElementById(slideshow.id+'nav'),
+        var nav = document.getElementById(slideshow.id+'-nav'),
             matchNav = new RegExp(elem.id + '(\\d+)');
 
         addEvent(elem,'click', function(event){
@@ -218,7 +218,7 @@ Slideshow.prototype = (function(){
                 /* to avoid animations on startup */
                 if(!slideshow.hasTransitions){
                     for(var i = 0, l = carousel.slides.length; i < l; i++)
-                        applyStyle(slideshow.id + 's' + i,transitionProp,slideshow.transition);
+                        applyStyle(slideshow.id + '-s' + i,transitionProp,slideshow.transition);
                     slideshow.hasTransitions = true;
                 }
             }
@@ -235,7 +235,7 @@ Slideshow.prototype = (function(){
             addEvent(elem,te,function(event){
                 event = event ? event : window.event;
                 var target = event.target || event.srcElement,
-                    target_id = slideshow.id + 's' + carousel.index;
+                    target_id = slideshow.id + '-s' + carousel.index;
                 // fixme: fires twice
                 if(target.id === target_id && typeof slideshow.afterTransit ==='function'){ 
                     slideshow.afterTransit(carousel.index, slideshow);
@@ -266,8 +266,7 @@ function getStyleProperty(props){
 }
 
 function hasTransitionEndEvent(){
-    var transitionEndEvents = ['transitionend', 'webkitTransitionEnd', 'otransitionend'],
-        hasTev;
+    var hasTev;
 
     hasTev = transitionEndEvents.filter(function(m){
         return ('on'+m.toLowerCase()) in window

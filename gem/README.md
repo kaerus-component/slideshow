@@ -70,7 +70,7 @@ You may override these ```.prev .next .show```classes to change the slider behav
 
 You may also target a specific slide by its slide id.
 ```
-	#slideshow0s1 { color:red; }
+	#mySlides-s0 { color:red; }
 ```
 
 
