@@ -12,7 +12,8 @@ gem: standalone
 	@make -C ./gem all
 
 dependencies:
-	@component install -v   
+	@component install -v
+	@component convert template.html   
 
 distclean:
 	@echo "Cleaning upp files"
