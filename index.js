@@ -208,7 +208,7 @@ Slideshow.prototype = (function(){
 
     function addTransitionHandler(nav){
         var dots = nav.getElementsByTagName('li'), 
-            ix, fx, lx = dots.length || 0;
+            ix, fx, lx = dots.length;
 
         carousel.onChange = function(index,from){
             ix = index % lx;
