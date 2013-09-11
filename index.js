@@ -207,13 +207,17 @@ Slideshow.prototype = (function(){
     }
 
     function addTransitionHandler(nav){
-        var dots = nav.getElementsByTagName('li');
+        var dots = nav.getElementsByTagName('li'), 
+            ix, fx, lx = dots.length || 0;
 
         carousel.onChange = function(index,from){
-            if(typeof slideshow.beforeTransit === 'function') slideshow.beforeTransit(index, slideshow);
+            ix = index % lx;
+            fx = from % lx;
+
+            if(typeof slideshow.beforeTransit === 'function') slideshow.beforeTransit(fx, slideshow);
 
             if(from !== undefined){
-                dots[from].className = "dot";
+                dots[fx].className = "dot";
                 /* apply transitions after first slide */
                 /* to avoid animations on startup */
                 if(!slideshow.hasTransitions){
@@ -223,7 +227,8 @@ Slideshow.prototype = (function(){
                 }
             }
             
-            dots[index].className = "active dot";
+            dots[ix].className = "active dot";
+
             carousel.transit(index,from);
         }
     }

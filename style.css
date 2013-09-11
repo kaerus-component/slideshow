@@ -109,15 +109,16 @@
 .slideshow .slides .slide.next,
 .slideshow .slides .slide.show {
     display: block;
-    z-index: 1;
-}
-
-.slideshow .slides .slide.next {
-    left: 100%;
 }
 
 .slideshow .slides .slide.prev {
     left: -100%;
+    z-index: 10;
+}
+
+.slideshow .slides .slide.next {
+    left: 100%;
+    z-index: 5;
 }
 
 .slideshow .slides .slide.show {
