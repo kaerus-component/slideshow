@@ -1,9 +1,15 @@
 body {
-	margin-top: 10em;
+	font-size: 67.5%;
 }
 
-#mySlides {
+ol {
+    list-style-type: none;
+}
+ol > li {
 	width: 40em;
 	height: 20em;
 	box-shadow:0px 2px 5px rgba(0,0,0,0.2);
+  margin: 1em;
+  display: inline-block;
 }
+
