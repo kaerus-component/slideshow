@@ -1,5 +1,7 @@
 var Carousel = require('carousel'),
-    template = require('./template');
+    template = require('./template'),
+    Prefix = require('prefix'),
+    prefixProp = {};
 
 function Slideshow(container,options){
 	if(!(this instanceof Slideshow))
@@ -16,12 +18,15 @@ function Slideshow(container,options){
         next:'&rang;',
         prev:'&lang;',
         time: 4000,
-        transition: ['all','1s'],
+        transition: ['all','1s', 'linear'],
         beforeTransit: undefined,
         afterTransit: undefined
     };
  
-    mergeOptions(this.settings,options);
+    for(var key in options) {
+        if(options.hasOwnProperty(key))
+            this.settings[key] = options[key];
+    }
 
     Object.defineProperty(this,'paused',{
         get: function() {
@@ -32,7 +37,8 @@ function Slideshow(container,options){
 	this.init(container);
 }
 
-Slideshow.prototype = {
+(function(){
+    Slideshow.prototype = {
         init: function(container,options){
             var settings = this.settings,
                 id = settings.id,
@@ -66,6 +72,9 @@ Slideshow.prototype = {
             /* add slideshow class to target container */
             if(!container.className) container.className = 'slideshow';
             else container.className+= ' slideshow';
+
+            settings.height = container.clientHeight;
+            settings.width = container.clientWidth;
 
             /* create newcarousel instance */
             this.carousel = new Carousel(id+'-slides');
@@ -120,12 +129,7 @@ Slideshow.prototype = {
 
             return this;
         }
-}
-
-
-    var transitionProp = ['webkitTransition','mozTransition','msTransition','oTransition'],
-    transitionEndEvents = ['transitionend', 'webkitTransitionEnd', 'otransitionend'],
-    transformProp = ['webkitTransform','mozTransform','msTransform','oTransform'];
+    }
 
 
     function attachHandlers(slideshow){
@@ -157,13 +161,9 @@ Slideshow.prototype = {
         if(typeof elem === 'string')
             elem = document.getElementById(elem);
 
-        if(!elem) return;
+        if(!elem || !prop) return;
 
-        if(Array.isArray(prop)){
-            prop = getStyleProperty(prop);
-        }
-
-        if(!prop) return;
+        prop = getStyleProperty(prop,true);
 
         if(Array.isArray(elem)){
             for(var i = 0, l = elem.length; i < l; i++)
@@ -221,7 +221,9 @@ Slideshow.prototype = {
             beforeTransit = settings.beforeTransit,
             afterTransit = settings.afterTransit,
             dots = nav.getElementsByTagName('li'), 
-            ix, fx, lx = dots.length;
+            ix, fx, lx = dots.length, 
+            prev, next, show,
+            width = slideshow.width;
 
         slideshow.carousel.onChange = function(index,from){
             ix = index % lx;
@@ -242,6 +244,22 @@ Slideshow.prototype = {
             
             dots[ix].className = "active dot";
 
+            prev = slideshow.carousel.getSlide(from,-1);
+            next = slideshow.carousel.getSlide(from,1);
+            show = slideshow.carousel.getSlide(from,0);
+
+            applyStyle(prev,'transform','translate3d(0, 0, 0)');
+            applyStyle(next,'transform','translate3d(0, 0, 0)');
+            applyStyle(show,'transform','translate3d(0, 0, 0)');
+
+            prev = slideshow.carousel.getSlide(index,-1);
+            next = slideshow.carousel.getSlide(index,1);
+            show = slideshow.carousel.getSlide(index,0);
+            
+            applyStyle(prev,'transform','translate3d(-' + settings.width + 'px, 0, 0)');
+            applyStyle(next,'transform','translate3d(' + settings.width + 'px, 0, 0)');
+            applyStyle(show,'transform','translate3d(0, 0, 0)');
+
             slideshow.carousel.transit(index,from);
         }
 
@@ -256,7 +274,8 @@ Slideshow.prototype = {
                 }    
             }
 
-            applyStyle(elems,transitionProp,transition);
+            applyStyle(elems,'transition',transition);
+            applyStyle(elems,'transform','translate3d(0, 0, 0)');
         }
 
         function addTransitionEndHandler(elem){
@@ -280,36 +299,21 @@ Slideshow.prototype = {
 
     }
 
-    transitionProp = getStyleProperty(transitionProp);
-    transformProp = getStyleProperty(transformProp);
+    function getStyleProperty(prop){
+        if(!prefixProp.hasOwnProperty(prop))
+            prefixProp[prop] = Prefix(prop,true);
 
-    function getStyleProperty(props){
-        var root = document.documentElement, 
-            prop;
-
-        prop = props.filter(function(p){
-            return p in root.style
-        });
-
-        return prop[0]
+        return prefixProp[prop];
     }
 
     function hasTransitionEndEvent(){
-        var hasTev;
+        var transitionEndEvents = ['transitionend', 'webkitTransitionEnd', 'otransitionend'], e;
 
-        hasTev = transitionEndEvents.filter(function(m){
+        e = transitionEndEvents.filter(function(m){
             return ('on'+m.toLowerCase()) in window
         });
 
-        return hasTev[0];
-    }
-
-    function mergeOptions(target,source){
-        for(var key in source) {
-            target[key] = source[key];
-        }
-        
-        return target;
+        return e[0];
     }
 
     function addEvent(el,ev,fn,cap){
@@ -321,6 +325,6 @@ Slideshow.prototype = {
 
         return el;
     }
-
+}());
 
 module.exports = Slideshow;

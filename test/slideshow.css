@@ -13,3 +13,8 @@ ol > li {
   display: inline-block;
 }
 
+#mySlides4 {
+	color: #666;
+	width: 60em;
+	height: 30em;
+}

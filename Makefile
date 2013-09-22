@@ -12,7 +12,7 @@ gem: standalone
 	@make -C ./gem all
 
 dependencies:
-	@component install -v
+	@component install 
 	@component convert template.html   
 
 distclean:

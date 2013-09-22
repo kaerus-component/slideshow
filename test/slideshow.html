@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
 <head>
+	<meta charset='utf-8'>
 	<title>Carousel test</title>
 	<link rel="stylesheet" type="text/css" href="../build/build.css">
 	<link rel="stylesheet" type="text/css" href="slideshow.css">
@@ -25,15 +26,34 @@
 			<div><img src="s6.jpg"><span class="caption">Slide#6</span></div>
 			<div><img src="s7.jpg"><span class="caption">Slide#7</span></div>
 		</li>
-	</ol>		
+	</ol>
+	<section id="mySlides4" class="greyish">
+		<article class="splash">
+			<h3>Kom igång</h3>
+			<p class="producttext justify">Design av en enklare hemsida med information om företaget * 1-sidelayout eller upp till 4 undersidor * installation av google analytics * sökmotor-optimerad * tillgänglighets anpassad * uppdatering av befintligt innehåll 3 ggr/år * sammanställning från google analytics 3 ggr/år * teknisk support * webbhotell * 3 st email adresser</p>
+		</article>		
+		<article class="splash">
+			<h3>Steg för steg</h3>
+			<p class="producttext justify">Du kanske har ett nytt företag och är inte helt säker på varken affäridén eller kommunikationen utåt. Vi bygger sidan i etapper där vi börjar enkelt och bygger på med det ni behöver under en längre tid så att hemsidan reflekterar det ni behöver kommunicera utåt. Beroende på vad målet med hemsidan är så jobbar vi med olika verktyg och i olika stor omfattning.</p>
+		</article>
+		<!--article class="splash">
+			<h3>Webbmaster</h3>
+			<p class="producttext justify">Du behöver någon som kan hjälpa till med din webblösning, med </p>
+		</article-->
+		<article class="splash">
+			<h3>Användarundersökning</h3>
+			<p class="producttext justify">Har du haft en hemsida ett tag känner du säkert att du vill förstå bättre hur bra den är på att nå dina mål. Vi tittar på de mål du har med sidan och utifrån detta lägger vi upp en plan på hur vi kan se om målen nås på sidan. Vi samlar in data och utvärderar användrarnas beteenden. Utifrån detta kommer vi med förslag på hur sidan kan fungera bättre för er.</p>
+		</article>
+	</section>		
 
 	<script src="../build/build.js"></script>
 	<script>
 		var slideshow = require('slideshow');
 
-		var mySlide1 = slideshow('mySlides1').start();
-		var mySlide2 = slideshow('mySlides2').start();
-		var mySlide3 = slideshow('mySlides3').start();
+		var mySlide1 = slideshow('mySlides1',{time:2000}).start();
+		var mySlide2 = slideshow('mySlides2',{time:4000}).start();
+		var mySlide3 = slideshow('mySlides3',{time:6000,transition:['all','2s'] }).start();
+		var mySlide4 = slideshow('mySlides4',{time:5000,transition:['all','3s'] }).start();
 
 	</script>
 </body>
