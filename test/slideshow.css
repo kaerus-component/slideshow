@@ -13,8 +13,108 @@ ol > li {
   display: inline-block;
 }
 
+/* disable user select on slides */
+.slideshow {
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;
+    -o-user-select: none;      
+    user-select: none;
+}  
+
+/* apply default transition */
+.slideshow .slides .slide.next {
+  left: 100%;
+}
+
+.slideshow .slides .slide.prev {
+  left: -100%;
+}
+
+.slideshow .slides .slide.show {
+  left: 0;
+}
+
+/* apply caption style */
+.slideshow .slides .slide .caption {
+    position: absolute;
+    display: block;
+    left: 2em;
+    top: 2em;
+}
+
+/* style next & prev buttons */
+.slideshow .nextSlide, 
+.slideshow .prevSlide {
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    margin: auto;
+    line-height: 2.6em;
+    width: 2.5em;
+    height: 2.5em;
+    text-align: center;
+    border-radius: 2em;
+    color: black;
+    background: white;
+    background-color: white;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    -ms-border-radius: 2em;
+    -o-border-radius: 2em;
+    border-radius: 2em;
+    z-index: 3;
+}
+
+.slideshow .nextSlide {
+    right: 2em;
+}
+
+.slideshow .prevSlide {
+    left: 2em;
+}
+
+/* style slide navigation as dots */
+.slideshow .navSlide {
+    font-size: 2em;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    color: rgba(255,255,255,0.5);
+    z-index: 3;
+}
+
+.slideshow .navSlide .navItem {
+    width: 0.5em;
+    text-align: center;
+    display: inline-block;
+    list-style-type: none;
+}
+
+.slideshow .navSlide .navItem:before {
+    content: "\0025cb";
+}
+
+.slideshow .navSlide .navItem.active:before {
+    content: "\0025cf";
+}
+
+.slideshow .navSlide ul{
+    padding-top: 1em;
+    text-align: center;
+    margin: 0 auto;
+    padding-start: 0;
+    -o-padding-start: 0;
+    -moz-padding-start: 0;
+    -webkit-padding-start: 0;
+}
+
+/* apply individual slide styling */
 #mySlides4 {
-	color: #666;
-	width: 60em;
-	height: 30em;
+  color: #666;
+  width: 60em;
+  height: 30em;
 }

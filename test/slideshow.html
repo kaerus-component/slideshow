@@ -28,21 +28,17 @@
 		</li>
 	</ol>
 	<section id="mySlides4" class="greyish">
-		<article class="splash">
-			<h3>Kom igång</h3>
-			<p class="producttext justify">Design av en enklare hemsida med information om företaget * 1-sidelayout eller upp till 4 undersidor * installation av google analytics * sökmotor-optimerad * tillgänglighets anpassad * uppdatering av befintligt innehåll 3 ggr/år * sammanställning från google analytics 3 ggr/år * teknisk support * webbhotell * 3 st email adresser</p>
+		<article>
+			<h2>Lorem ipsum</h2>
+			<p>Lorem ipsum dolor sit amet, cu eripuit vocibus facilis vel. In simul volutpat eloquentiam mel. Mea stet accusamus definitiones at, quo an brute errem iracundia. Te illud molestiae est, choro volumus vivendum in quo, pri soluta appetere ex. Adhuc quidam sententiae pri et.</p>
 		</article>		
-		<article class="splash">
-			<h3>Steg för steg</h3>
-			<p class="producttext justify">Du kanske har ett nytt företag och är inte helt säker på varken affäridén eller kommunikationen utåt. Vi bygger sidan i etapper där vi börjar enkelt och bygger på med det ni behöver under en längre tid så att hemsidan reflekterar det ni behöver kommunicera utåt. Beroende på vad målet med hemsidan är så jobbar vi med olika verktyg och i olika stor omfattning.</p>
+		<article>
+			<h2>Idque errem perpetua</h2>
+			<p>Idque errem perpetua duo ei, vix ea audire dolorum deleniti, sea cu discere eripuit laboramus. Qui prima rebum suscipit in. Sed in oportere constituto accommodare. Mel labore malorum civibus ex, nominavi inciderint adversarium an mel.</p>
 		</article>
-		<!--article class="splash">
-			<h3>Webbmaster</h3>
-			<p class="producttext justify">Du behöver någon som kan hjälpa till med din webblösning, med </p>
-		</article-->
-		<article class="splash">
-			<h3>Användarundersökning</h3>
-			<p class="producttext justify">Har du haft en hemsida ett tag känner du säkert att du vill förstå bättre hur bra den är på att nå dina mål. Vi tittar på de mål du har med sidan och utifrån detta lägger vi upp en plan på hur vi kan se om målen nås på sidan. Vi samlar in data och utvärderar användrarnas beteenden. Utifrån detta kommer vi med förslag på hur sidan kan fungera bättre för er.</p>
+		<article>
+			<h2>Eu his discere voluptua</h2>
+			<p>Eu his discere voluptua, et eam inermis euripidis philosophia. Mea dicit quaeque civibus at. Consequat dissentiunt usu cu. Quo at essent hendrerit elaboraret. Id est ferri atqui vituperata, utinam epicurei ne has. Ut duo altera molestie senserit, hinc tincidunt usu cu, eum zril soleat eu.</p>
 		</article>
 	</section>		
 
@@ -50,10 +46,10 @@
 	<script>
 		var slideshow = require('slideshow');
 
-		var mySlide1 = slideshow('mySlides1',{time:2000}).start();
-		var mySlide2 = slideshow('mySlides2',{time:4000}).start();
-		var mySlide3 = slideshow('mySlides3',{time:6000,transition:['all','2s'] }).start();
-		var mySlide4 = slideshow('mySlides4',{time:5000,transition:['all','3s'] }).start();
+		var mySlide1 = slideshow('mySlides1',{time:2000});
+		var mySlide2 = slideshow('mySlides2',{time:4000});
+		var mySlide3 = slideshow('mySlides3',{time:6000,transition:['all','2s'], auto: false }).start(1);
+		var mySlide4 = slideshow('mySlides4',{time:5000,transition:['all','3s'], auto: 2 });
 
 	</script>
 </body>

@@ -17,6 +17,7 @@ function Slideshow(container,options){
         template: template,
         next:'&rang;',
         prev:'&lang;',
+        auto: true,
         time: 4000,
         transition: ['all','1s', 'linear'],
         beforeTransit: undefined,
@@ -43,7 +44,7 @@ function Slideshow(container,options){
             var settings = this.settings,
                 id = settings.id,
                 slides = '\n', 
-                dots = '\n', 
+                navItems = '\n', 
                 navId = id + '-nav',
                 childs = container.childNodes;
 
@@ -51,7 +52,7 @@ function Slideshow(container,options){
             for(var i = 0, n = 0, l = childs.length; i < l; i++){
                 if(childs[i].nodeType === 1){ 
                     slides+= '<div id="'+ id + '-s' + n + '">' + childs[i].outerHTML + '</div>\n';
-                    dots+='<li class="dot" id="' + navId + n + '"></li>\n';
+                    navItems+='<li class="navItem" id="' + navId + n + '"></li>\n';
                     n++;
                 }    
             }
@@ -63,7 +64,7 @@ function Slideshow(container,options){
                     case "{slides}": return slides;
                     case "{next}": return settings.next;
                     case "{prev}": return settings.prev; 
-                    case "{nav}": return dots;
+                    case "{nav}": return navItems;
                 }
             });
 
@@ -81,12 +82,17 @@ function Slideshow(container,options){
 
             this.slides = this.carousel.slides;
 
-            attachHandlers(this);        
+            attachHandlers(this);  
+
+            /* autostart on initialization */
+            if(this.settings.auto !== false){
+                this.start(this.settings.auto === true ? 0 : this.settings.auto);
+            }      
 
             return this;        
         },
-        start: function(){
-            this.carousel.start(0,this.settings.time);
+        start: function(index){
+            this.carousel.start(index,this.settings.time);
 
             return this;
         },
@@ -220,10 +226,8 @@ function Slideshow(container,options){
             transition = settings.transition,
             beforeTransit = settings.beforeTransit,
             afterTransit = settings.afterTransit,
-            dots = nav.getElementsByTagName('li'), 
-            ix, fx, lx = dots.length, 
-            prev, next, show,
-            width = slideshow.width;
+            navItems = nav.getElementsByTagName('li'), 
+            ix, fx, lx = navItems.length;
 
         slideshow.carousel.onChange = function(index,from){
             ix = index % lx;
@@ -233,7 +237,7 @@ function Slideshow(container,options){
                 beforeTransit(ix, slideshow);
 
             if(from !== undefined){
-                dots[fx].className = "dot";
+                navItems[fx].className = "navItem";
                 /* apply transitions after first slide */
                 /* to avoid animations on startup */
                 if(!slideshow.hasTransitions){
@@ -242,23 +246,7 @@ function Slideshow(container,options){
                 }
             }
             
-            dots[ix].className = "active dot";
-
-            prev = slideshow.carousel.getSlide(from,-1);
-            next = slideshow.carousel.getSlide(from,1);
-            show = slideshow.carousel.getSlide(from,0);
-
-            applyStyle(prev,'transform','translate3d(0, 0, 0)');
-            applyStyle(next,'transform','translate3d(0, 0, 0)');
-            applyStyle(show,'transform','translate3d(0, 0, 0)');
-
-            prev = slideshow.carousel.getSlide(index,-1);
-            next = slideshow.carousel.getSlide(index,1);
-            show = slideshow.carousel.getSlide(index,0);
-            
-            applyStyle(prev,'transform','translate3d(-' + settings.width + 'px, 0, 0)');
-            applyStyle(next,'transform','translate3d(' + settings.width + 'px, 0, 0)');
-            applyStyle(show,'transform','translate3d(0, 0, 0)');
+            navItems[ix].className = "active navItem";
 
             slideshow.carousel.transit(index,from);
         }
@@ -275,7 +263,6 @@ function Slideshow(container,options){
             }
 
             applyStyle(elems,'transition',transition);
-            applyStyle(elems,'transform','translate3d(0, 0, 0)');
         }
 
         function addTransitionEndHandler(elem){

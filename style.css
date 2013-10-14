@@ -4,90 +4,15 @@
     position: relative;
     overflow: hidden;
     color: white;
-    -webkit-user-select: none;  
-    -moz-user-select: none;    
-    -ms-user-select: none;
-    -o-user-select: none;      
-    user-select: none;
-}
-
-.slideshow .nextSlide, 
-.slideshow .prevSlide {
-    cursor: pointer;
-    display: inline-block;
-    position: absolute;
-    top:0;
-    bottom: 0;
-    margin: auto;
-    line-height: 2.6em;
-    width: 2.5em;
-    height: 2.5em;
-    text-align: center;
-    border-radius: 2em;
-    color: black;
-    background: white;
-    background-color: white;
-    -webkit-border-radius: 2em;
-    -moz-border-radius: 2em;
-    -ms-border-radius: 2em;
-    -o-border-radius: 2em;
-    border-radius: 2em;
-    z-index: 9999;
-}
-
-.slideshow .nextSlide {
-    right: 2em;
-}
-
-.slideshow .prevSlide {
-    left: 2em;
-}
-
-.slideshow .navSlide {
-    font-size: 2em;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    color: white;
-    color: rgba(255,255,255,0.5);
-    z-index: 9999;
-}
-
-.slideshow .navSlide .dot {
-    width: 0.5em;
-    text-align: center;
-    display: inline-block;
-    list-style-type: none;
-}
-
-.slideshow .navSlide .dot:before {
-    content: "\0025cb";
-}
-
-.slideshow .navSlide .dot.active:before {
-    content: "\0025cf";
-}
-
-.slideshow .navSlide ul{
-    padding-top: 1em;
-    text-align: center;
-    margin: 0 auto;
-    padding-start: 0;
-    -o-padding-start: 0;
-    -moz-padding-start: 0;
-    -webkit-padding-start: 0;
 }
 
 .slideshow .slides .slide{
     position: absolute;
     overflow: hidden;
-    display: none;
+    visibility: hidden;
     width: 100%;
     height: 100%;
-    padding: 0;
-    margin: 0;
-    top: 0;
-    left: 0;
+    z-index: 0;
 }
 
 .slideshow .slides .slide img {
@@ -95,16 +20,18 @@
     height: 100%;
 }
 
-.slideshow .slides .slide .caption {
-    position: absolute;
-    display: block;
-    left: 2em;
-    top: 2em;
-}
 
 .slideshow .slides .slide.prev,
 .slideshow .slides .slide.next,
 .slideshow .slides .slide.show {
-    display: block;
+    z-index: 1;
 }
+
+.slideshow .slides .slide.show {
+    visibility: visible;
+    z-index: 2;
+}
+
+
+
 
