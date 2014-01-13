@@ -25,8 +25,7 @@ function Slideshow(container,options){
     };
  
     for(var key in options) {
-        if(options.hasOwnProperty(key))
-            this.settings[key] = options[key];
+        this.settings[key] = options[key];
     }
 
     Object.defineProperty(this,'paused',{
@@ -148,8 +147,10 @@ function Slideshow(container,options){
             prev = document.getElementById(id+'-prev');
 
         /* add slidshow UI handlers */
+        if(slideshow.settings.canPause) 
+            addPauseHandler(slides, slideshow);
+        
         addNavHandler(nav,slideshow);
-        addPauseHandler(slides, slideshow);
         addTransitionHandler(nav, slides, slideshow);
 
         addEvent(next,'click',function(event){
