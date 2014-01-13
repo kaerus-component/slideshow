@@ -70,6 +70,8 @@ function Slideshow(container,options){
 
             /* apply slider template */
             container.innerHTML = template;
+            /* enable WebGL accelleration */
+            applyStyle(container,'transform','translateZ(0)');
             /* add slideshow class to target container */
             if(!container.className) container.className = 'slideshow';
             else container.className+= ' slideshow';
@@ -147,7 +149,7 @@ function Slideshow(container,options){
 
         /* add slidshow UI handlers */
         addNavHandler(nav,slideshow);
-        addPauseHandler(slides);
+        addPauseHandler(slides, slideshow);
         addTransitionHandler(nav, slides, slideshow);
 
         addEvent(next,'click',function(event){
