@@ -1,7 +1,7 @@
 module Kaerus
   module Component
     module Slideshow
-      VERSION = "0.0.16"
+      VERSION = "0.1.0"
     end
   end
 end

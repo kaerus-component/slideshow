@@ -1,4 +1,5 @@
 var Carousel = require('carousel'),
+    Emitter = require('emitter'),
     template = require('./template'),
     Prefix = require('prefix'),
     prefixProp = {};
@@ -19,9 +20,7 @@ function Slideshow(container,options){
         prev:'&lang;',
         auto: true,
         time: 4000,
-        transition: ['all','1s', 'linear'],
-        beforeTransit: undefined,
-        afterTransit: undefined
+        transition: ['all','1s', 'linear']
     };
  
     for(var key in options) {
@@ -33,6 +32,9 @@ function Slideshow(container,options){
             return this.carousel.paused;
         }
     });
+
+    /* mixin emitter */
+    Emitter(this);
 
 	this.init(container);
 }
@@ -85,6 +87,8 @@ function Slideshow(container,options){
 
             attachHandlers(this);  
 
+            this.emit('init');
+
             /* autostart on initialization */
             if(this.settings.auto !== false){
                 this.start(this.settings.auto === true ? 0 : this.settings.auto);
@@ -94,36 +98,55 @@ function Slideshow(container,options){
         },
         start: function(index){
             this.carousel.start(index,this.settings.time);
+            this.emit('start');
 
             return this;
         },
         stop: function(){
             this.carousel.stop();
+            this.emit('stop');
 
             return this;
         },
         pause: function(){
             this.carousel.pause();
+            this.emit('pause');
 
             return this;
         },
         next: function(){
-            this.carousel.next();
+            var self = this;
+
+            if(!this.inTransition) {
+                this.carousel.next();
+                this.emit('next');
+            } else this.once('transition-end',function(){
+                self.next();
+            });
 
             return this;
         },
         prev: function(){
-            this.carousel.prev();
+            var self = this;
+
+            if(!this.inTransition) {
+                this.carousel.prev();
+                this.emit('prev');
+            } else this.once('transition-end',function(){
+                self.prev();
+            });
 
             return this;
         },
         resume: function(){
             this.carousel.resume();
+            this.emit('resume');
 
             return this;
         },
         show: function(x){
             this.carousel.show(x);
+            this.emit('show');
 
             return this;
         },
@@ -227,22 +250,33 @@ function Slideshow(container,options){
     function addTransitionHandler(nav,slides,slideshow){
         var settings = slideshow.settings,
             transition = settings.transition,
-            beforeTransit = settings.beforeTransit,
-            afterTransit = settings.afterTransit,
             navItems = nav.getElementsByTagName('li'), 
-            ix, fx, lx = navItems.length;
+            timer, durationProp, duration, s = 0, 
+            ix, fx, lx = navItems.length, slide = [], node;
 
+/*        $('#objectID').css('-webkit-transition-duration');*/
+
+        durationProp = getStyleProperty('transition-duration',true);
+
+        for(var x in slides.childNodes){
+            node = slides.childNodes[x];
+            if(node && node.id && node.id.indexOf(settings.id + '-s') === 0)
+                slide[s++] = node;
+        }
+        
         slideshow.carousel.onChange = function(index,from){
+            var current;
+
             ix = index % lx;
             fx = from % lx;
 
-            if(typeof beforeTransit === 'function') 
-                beforeTransit(ix, slideshow);
+            slideshow.inTransition = true;
+
+            slideshow.emit('transition',slide[ix],ix);
 
             if(from !== undefined){
                 navItems[fx].className = "navItem";
-                /* apply transitions after first slide */
-                /* to avoid animations on startup */
+                // apply transitions after first slide to avoid animations on startup
                 if(!slideshow.hasTransitions){
                     applyTransitions(document.getElementById(settings.id + '-slides'));
                     slideshow.hasTransitions = true;
@@ -251,10 +285,24 @@ function Slideshow(container,options){
             
             navItems[ix].className = "active navItem";
 
+            
+            s = window.getComputedStyle(slide[ix],null).getPropertyValue(durationProp);
+            
+            if(s.indexOf('s') > 0) s = parseInt(s,10) * 1000;
+            else s = parseInt(s,10);
+
+            current = ix;
+
+            if(s){
+                /* note: workaround for problematic transition-end event */
+                timer = setTimeout(function(){
+                    slideshow.inTransition = false;
+                    slideshow.emit('transition-end',slide[current],current);
+                },s);
+            }
+
             slideshow.carousel.transit(index,from);
         }
-
-        addTransitionEndHandler(slides);
 
         function applyTransitions(container){
             var childs = container.childNodes, elems = [];
@@ -266,25 +314,6 @@ function Slideshow(container,options){
             }
 
             applyStyle(elems,'transition',transition);
-        }
-
-        function addTransitionEndHandler(elem){
-            var te, index = slideshow.carousel.index, x = index % lx;
-
-            if((te = hasTransitionEndEvent())){
-                addEvent(elem,te,function(event){
-                    event = event ? event : window.event;
-                    var target = event.target || event.srcElement,
-                        target_id = slideshow.id + '-s' + index;
-                    // fixme: fires twice
-                    if(target.id === target_id && typeof afterTransit ==='function'){ 
-                        afterTransit(x, slideshow);
-                    }   
-                });
-                slideshow.hasTransitionEndEvent = true;
-            } else {
-                slideshow.hasTransitionEndEvent = false;
-            }
         }
 
     }

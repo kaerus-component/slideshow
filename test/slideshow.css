@@ -113,7 +113,7 @@ ol > li {
 }
 
 /* apply individual slide styling */
-#mySlides4 {
+#mySlides {
   color: #666;
   width: 60em;
   height: 30em;
@@ -121,31 +121,31 @@ ol > li {
   border: outset 0.25em lightgrey;
 }
 
-#mySlides4 .slides .slide {
+#mySlides .slides .slide {
   background: #181818;
   color: #fafafa;
 }
 
-#mySlides4 .slides .slide.prev{
+#mySlides .slides .slide.prev{
   background: #181818;
   color: #fafafa;
 }
 
-#mySlides4 .nextSlide, 
-#mySlides4 .prevSlide {
-  display: none;
+#mySlides .nextSlide, 
+#mySlides .prevSlide {
+  /*display: none;*/
 }
 
-#mySlides4 figure {
+#mySlides figure {
   padding-right: 2em;
 }
 
-#mySlides4 figure figcaption {
+#mySlides figure figcaption {
   font-size: 1.2em;
   color: #aaa;
 }
 
-#mySlides4 figure img{
+#mySlides figure img{
   width: 10em;
   height: 10em;
   float: left;
@@ -155,7 +155,7 @@ ol > li {
   -webkit-box-reflect: below 8px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.4, transparent), to(rgba(255,255,255,0.6))); 
 }
 
-#mySlides4 h1 {
+#mySlides h1 {
   font-size: 2em;
   text-transform: uppercase;
   text-align: center;

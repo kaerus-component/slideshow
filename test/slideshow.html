@@ -7,27 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="slideshow.css">
 </head>
 <body>
-	<ol>
-		<li id="mySlides1">
-			<div><img src="s1.jpg"><span class="caption">Slide#1</span></div>
-			<div><img src="s2.jpg"><span class="caption">Slide#2</span></div>
-			<div><img src="s3.jpg"><span class="caption">Slide#3</span></div>
-			<div><img src="s4.jpg"><span class="caption">Slide#4</span></div>
-			<div><img src="s5.jpg"><span class="caption">Slide#5</span></div>
-			<div><img src="s6.jpg"><span class="caption">Slide#6</span></div>
-			<div><img src="s7.jpg"><span class="caption">Slide#7</span></div>
-		</li>
-		<li id="mySlides2">
-			<div><img src="s3.jpg"><span class="caption">Slide#3</span></div>
-			<div><img src="s4.jpg"><span class="caption">Slide#4</span></div>
-		</li>	
-		<li id="mySlides3">
-			<div><img src="s5.jpg"><span class="caption">Slide#5</span></div>
-			<div><img src="s6.jpg"><span class="caption">Slide#6</span></div>
-			<div><img src="s7.jpg"><span class="caption">Slide#7</span></div>
-		</li>
-	</ol>
-	<section id="mySlides4" class="greyish">
+	<section id="mySlides" class="greyish">
 		<article>
 			<h1>Lorem ipsum</h1>
 			<figure>
@@ -54,7 +34,6 @@
 					Eu his discere voluptua, et eam inermis euripidis philosophia. Mea dicit quaeque civibus at. Consequat dissentiunt usu cu. Quo at essent hendrerit elaboraret. Id est ferri atqui vituperata, utinam epicurei ne has. Ut duo altera molestie senserit, hinc tincidunt usu cu, eum zril soleat eu.
 				</figcaption>
 			</figure>
-			
 		</article>
 	</section>		
 
@@ -62,11 +41,31 @@
 	<script>
 		var slideshow = require('slideshow');
 
-		var mySlide1 = slideshow('mySlides1',{time:2000,canPause: true});
-		var mySlide2 = slideshow('mySlides2',{time:4000});
-		var mySlide3 = slideshow('mySlides3',{time:6000,transition:['all','2s'], auto: false }).start(1);
-		var mySlide4 = slideshow('mySlides4',{time:5000,transition:['all','3s','ease-in-out'] });
+		var mySlides = slideshow('mySlides',{
+			time: 5000,
+			canPause: true, 
+			transition:['all','2s'] 
+		});
 
+		mySlides.on('init',function(){
+			console.log("mySlides initialized");
+		}).on('start',function(){
+			console.log("mySlides started");
+		}).on('stop',function(){
+			console.log("mySlides stopped");
+		}).on('pause',function(){
+			console.log("mySlides paused");
+		}).on('resume',function(){
+			console.log("mySlides resumed");
+		}).on('next',function(){
+			console.log("mySlides next");
+		}).on('prev',function(){
+			console.log("mySlides prev");
+		}).on('transition',function(slide, x){
+			console.log("mySlides transition", slide, x);
+		}).on('transition-end',function(slide, x){
+			console.log("mySlides transition-ended", slide, x);
+		})
 	</script>
 </body>
 </html>

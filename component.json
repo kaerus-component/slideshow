@@ -1,6 +1,6 @@
 {
   "name": "slideshow",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "Slideshow",
   "repo": "kaerus-component/slideshow",
   "scripts": [
@@ -12,6 +12,7 @@
   ],
   "dependencies":{
   	"kaerus-component/carousel":"0.3.3",
+    "kaerus-component/emitter":"*",
     "pgherveou/prefix":"*"
   },
   "license": "Apache2_0"
