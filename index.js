@@ -43,7 +43,7 @@ function Slideshow(container,options){
     Slideshow.prototype = {
         init: function(container,options){
             var settings = this.settings,
-                id = settings.id,
+                id = this.id = settings.id,
                 slides = '\n', 
                 navItems = '\n', 
                 navId = id + '-nav',
@@ -87,6 +87,8 @@ function Slideshow(container,options){
 
             attachHandlers(this);  
 
+            this.inTransition = false;
+
             this.emit('init');
 
             /* autostart on initialization */
@@ -115,26 +117,14 @@ function Slideshow(container,options){
             return this;
         },
         next: function(){
-            var self = this;
-
-            if(!this.inTransition) {
-                this.carousel.next();
+            if(this.whenReady('next'));
                 this.emit('next');
-            } else this.once('transition-end',function(){
-                self.next();
-            });
 
             return this;
         },
         prev: function(){
-            var self = this;
-
-            if(!this.inTransition) {
-                this.carousel.prev();
+            if(this.whenReady('prev'));
                 this.emit('prev');
-            } else this.once('transition-end',function(){
-                self.prev();
-            });
 
             return this;
         },
@@ -158,6 +148,28 @@ function Slideshow(container,options){
             else slides.style.display = 'none';
 
             return this;
+        },
+        whenReady: function(action){
+            var self = this, handlers, hasHandler;
+
+            if(!this.inTransition) {
+                this.carousel[action]();
+                return true;
+            } else {
+                handlers = this.listeners('transition-end');
+                for(var h in handlers){
+                    if(handlers[h]._of && handlers[h]._of === self[action]){
+                        hasHandler = true;
+                        break;
+                    }
+                }
+                
+                if(!hasHandler){
+                    this.once('transition-end', self[action]);
+                }
+            }
+
+            return false;
         }
     }
 
@@ -170,21 +182,24 @@ function Slideshow(container,options){
             prev = document.getElementById(id+'-prev');
 
         /* add slidshow UI handlers */
-        if(slideshow.settings.canPause) 
-            addPauseHandler(slides, slideshow);
-        
-        addNavHandler(nav,slideshow);
-        addTransitionHandler(nav, slides, slideshow);
-
         addEvent(next,'click',function(event){
+            event = event ? event : window.event;
             slideshow.next();
             event.stopPropagation();
         }); 
 
         addEvent(prev,'click',function(event){
+            event = event ? event : window.event;
             slideshow.prev();
             event.stopPropagation();
         }); 
+
+        if(slideshow.settings.canPause) 
+            addPauseHandler(slides, slideshow);
+        
+        addNavHandler(nav,slideshow);
+
+        addTransitionHandler(nav, slides, slideshow);
     }
 
     function applyStyle(elem,prop,attr){
@@ -251,10 +266,8 @@ function Slideshow(container,options){
         var settings = slideshow.settings,
             transition = settings.transition,
             navItems = nav.getElementsByTagName('li'), 
-            timer, durationProp, duration, s = 0, 
+            timer, durationProp, s = 0, 
             ix, fx, lx = navItems.length, slide = [], node;
-
-/*        $('#objectID').css('-webkit-transition-duration');*/
 
         durationProp = getStyleProperty('transition-duration',true);
 
@@ -270,36 +283,35 @@ function Slideshow(container,options){
             ix = index % lx;
             fx = from % lx;
 
-            slideshow.inTransition = true;
-
             slideshow.emit('transition',slide[ix],ix);
 
             if(from !== undefined){
+                slideshow.inTransition = true;
+
                 navItems[fx].className = "navItem";
                 // apply transitions after first slide to avoid animations on startup
                 if(!slideshow.hasTransitions){
                     applyTransitions(document.getElementById(settings.id + '-slides'));
                     slideshow.hasTransitions = true;
                 }
+
+                s = window.getComputedStyle(slide[ix],null).getPropertyValue(durationProp);
+            
+                if(s.indexOf('s') > 0) s = parseInt(s,10) * 1000;
+                else s = parseInt(s,10);
+
+                current = ix;
+
+                if(s){
+                    /* note: workaround for problematic transition-end event */
+                    timer = setTimeout(function(){
+                        slideshow.inTransition = false;
+                        slideshow.emit('transition-end',slide[current],current);
+                    },s);
+                }
             }
             
             navItems[ix].className = "active navItem";
-
-            
-            s = window.getComputedStyle(slide[ix],null).getPropertyValue(durationProp);
-            
-            if(s.indexOf('s') > 0) s = parseInt(s,10) * 1000;
-            else s = parseInt(s,10);
-
-            current = ix;
-
-            if(s){
-                /* note: workaround for problematic transition-end event */
-                timer = setTimeout(function(){
-                    slideshow.inTransition = false;
-                    slideshow.emit('transition-end',slide[current],current);
-                },s);
-            }
 
             slideshow.carousel.transit(index,from);
         }
