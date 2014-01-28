@@ -42,11 +42,15 @@ function Slideshow(container,options){
 (function(){
     Slideshow.prototype = {
         init: function(container,options){
-            var settings = this.settings,
+            var self = this,
+                settings = this.settings,
                 id = this.id = settings.id,
                 slides = '\n', 
                 navItems = '\n', 
                 navId = id + '-nav',
+                nextId = id + '-next',
+                prevId = id + '-prev',
+                slideId = id + '-slides',
                 childs = container.childNodes;
 
             /* get slides from parent container */
@@ -81,20 +85,32 @@ function Slideshow(container,options){
             settings.width = container.clientWidth;
 
             /* create newcarousel instance */
-            this.carousel = new Carousel(id+'-slides');
+            this.carousel = new Carousel(slideId);
 
             this.slides = this.carousel.slides;
 
-            attachHandlers(this);  
+            this.navId = '#' + navId;
+
+            this.slideId = '#' + slideId;
+
+            this.nextId = '#' + nextId;
+
+            this.prevId = '#' + prevId;
+
+            transitionHandler(document.getElementById(navId),
+                document.getElementById(slideId),
+                this);  
 
             this.inTransition = false;
-
-            this.emit('init');
 
             /* autostart on initialization */
             if(this.settings.auto !== false){
                 this.start(this.settings.auto === true ? 0 : this.settings.auto);
             }      
+
+            setTimeout(function(){
+                self.emit('init');
+            }, 0 );
 
             return this;        
         },
@@ -135,9 +151,14 @@ function Slideshow(container,options){
             return this;
         },
         show: function(x){
-            this.carousel.show(x);
-            this.emit('show');
+            if(typeof x === 'string'){
+                x = x.match(/\d+$/)[0];
+                x = x ? parseInt(x,10) : 0;
+            }
 
+            if(this.whenReady('show',x));
+                this.emit('show',x);
+            
             return this;
         },
         display: function(value){
@@ -149,11 +170,11 @@ function Slideshow(container,options){
 
             return this;
         },
-        whenReady: function(action){
+        whenReady: function(action,value){
             var self = this, handlers, hasHandler;
 
             if(!this.inTransition) {
-                this.carousel[action]();
+                this.carousel[action](value);
                 return true;
             } else {
                 handlers = this.listeners('transition-end');
@@ -165,7 +186,7 @@ function Slideshow(container,options){
                 }
                 
                 if(!hasHandler){
-                    this.once('transition-end', self[action]);
+                    this.once('transition-end', self[action], value);
                 }
             }
 
@@ -173,34 +194,6 @@ function Slideshow(container,options){
         }
     }
 
-
-    function attachHandlers(slideshow){
-        var id = slideshow.settings.id,
-            slides = document.getElementById(id+'-slides'),
-            nav = document.getElementById(id+'-nav'),
-            next = document.getElementById(id+'-next'),
-            prev = document.getElementById(id+'-prev');
-
-        /* add slidshow UI handlers */
-        addEvent(next,'click',function(event){
-            event = event ? event : window.event;
-            slideshow.next();
-            event.stopPropagation();
-        }); 
-
-        addEvent(prev,'click',function(event){
-            event = event ? event : window.event;
-            slideshow.prev();
-            event.stopPropagation();
-        }); 
-
-        if(slideshow.settings.canPause) 
-            addPauseHandler(slides, slideshow);
-        
-        addNavHandler(nav,slideshow);
-
-        addTransitionHandler(nav, slides, slideshow);
-    }
 
     function applyStyle(elem,prop,attr){
         var style = '';
@@ -235,36 +228,8 @@ function Slideshow(container,options){
         elem.style[prop] = style; 
     }
 
-    function addNavHandler(elem,slideshow){
-        var nav = document.getElementById(slideshow.settings.id+'-nav'),
-            matchNav = new RegExp(elem.id + '(\\d+)');
-
-        addEvent(elem,'click', function(event){
-            event = event ? event : window.event;
-            var target = event.target || event.srcElement,
-                ix = matchNav.exec(target.id);
-
-            if(ix) {
-                slideshow.show(ix[1]);
-                event.stopPropagation();
-            }	
-        });
-    }
-
-    /* adds click handler on slide to toggle pause */
-    function addPauseHandler(elem,slideshow){
-        elem.addEventListener('click',function(event){
-            if(slideshow.paused) {
-                slideshow.resume();
-            } else {
-                slideshow.pause();
-            }
-        });
-    }
-
-    function addTransitionHandler(nav,slides,slideshow){
+    function transitionHandler(nav,slides,slideshow){
         var settings = slideshow.settings,
-            transition = settings.transition,
             navItems = nav.getElementsByTagName('li'), 
             timer, durationProp, s = 0, 
             ix, fx, lx = navItems.length, slide = [], node;
@@ -276,6 +241,8 @@ function Slideshow(container,options){
             if(node && node.id && node.id.indexOf(settings.id + '-s') === 0)
                 slide[s++] = node;
         }
+
+        applyStyle(slide,'transition',settings.transition);
         
         slideshow.carousel.onChange = function(index,from){
             var current;
@@ -289,11 +256,6 @@ function Slideshow(container,options){
                 slideshow.inTransition = true;
 
                 navItems[fx].className = "navItem";
-                // apply transitions after first slide to avoid animations on startup
-                if(!slideshow.hasTransitions){
-                    applyTransitions(document.getElementById(settings.id + '-slides'));
-                    slideshow.hasTransitions = true;
-                }
 
                 s = window.getComputedStyle(slide[ix],null).getPropertyValue(durationProp);
             
@@ -315,19 +277,6 @@ function Slideshow(container,options){
 
             slideshow.carousel.transit(index,from);
         }
-
-        function applyTransitions(container){
-            var childs = container.childNodes, elems = [];
-
-            for(var i = 0, l = childs.length; i < l; i++){
-                if(childs[i].nodeType === 1){
-                    elems.push(childs[i]);      
-                }    
-            }
-
-            applyStyle(elems,'transition',transition);
-        }
-
     }
 
     function getStyleProperty(prop){
@@ -337,25 +286,6 @@ function Slideshow(container,options){
         return prefixProp[prop];
     }
 
-    function hasTransitionEndEvent(){
-        var transitionEndEvents = ['transitionend', 'webkitTransitionEnd', 'otransitionend'], e;
-
-        e = transitionEndEvents.filter(function(m){
-            return ('on'+m.toLowerCase()) in window
-        });
-
-        return e[0];
-    }
-
-    function addEvent(el,ev,fn,cap){
-        if(el.addEventListener){
-            el.addEventListener(ev, fn, !!cap);
-        } else if (el.attachEvent){
-            el.attachEvent('on' + ev, fn);
-        }  else el['on' + ev] = fn;
-
-        return el;
-    }
 }());
 
 module.exports = Slideshow;

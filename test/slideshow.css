@@ -119,6 +119,7 @@ ol > li {
   height: 30em;
   font-family: sans-serif;
   border: outset 0.25em lightgrey;
+  display: none;
 }
 
 #mySlides .slides .slide {
