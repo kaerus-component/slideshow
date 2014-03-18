@@ -133,14 +133,12 @@ function Slideshow(container,options){
             return this;
         },
         next: function(){
-            if(this.whenReady('next'));
-                this.emit('next');
+            this.whenReady('next');
 
             return this;
         },
         prev: function(){
-            if(this.whenReady('prev'));
-                this.emit('prev');
+            this.whenReady('prev');
 
             return this;
         },
@@ -156,8 +154,7 @@ function Slideshow(container,options){
                 x = x ? parseInt(x,10) : 0;
             }
 
-            if(this.whenReady('show',x));
-                this.emit('show',x);
+            this.whenReady('show',x);
             
             return this;
         },
@@ -171,26 +168,14 @@ function Slideshow(container,options){
             return this;
         },
         whenReady: function(action,value){
-            var self = this, handlers, hasHandler;
+            var self = this;
 
             if(!this.inTransition) {
                 this.carousel[action](value);
-                return true;
-            } else {
-                handlers = this.listeners('transition-end');
-                for(var h in handlers){
-                    if(handlers[h]._of && handlers[h]._of === self[action]){
-                        hasHandler = true;
-                        break;
-                    }
-                }
-                
-                if(!hasHandler){
-                    this.once('transition-end', self[action], value);
-                }
+                this.emit(action,value);
+            } else {    
+                this.once('transition-end', this[action], value);
             }
-
-            return false;
         }
     }
 
@@ -203,7 +188,7 @@ function Slideshow(container,options){
 
         if(!elem || !prop) return;
 
-        prop = getStyleProperty(prop,true);
+        prop = Prefix.dash(prop);
 
         if(Array.isArray(elem)){
             for(var i = 0, l = elem.length; i < l; i++)
@@ -234,8 +219,8 @@ function Slideshow(container,options){
             timer, durationProp, s = 0, 
             ix, fx, lx = navItems.length, slide = [], node;
 
-        durationProp = getStyleProperty('transition-duration',true);
-
+        durationProp = 'transition-duration';
+        
         for(var x in slides.childNodes){
             node = slides.childNodes[x];
             if(node && node.id && node.id.indexOf(settings.id + '-s') === 0)
@@ -258,7 +243,7 @@ function Slideshow(container,options){
                 navItems[fx].className = "navItem";
 
                 s = window.getComputedStyle(slide[ix],null).getPropertyValue(durationProp);
-            
+
                 if(s.indexOf('s') > 0) s = parseInt(s,10) * 1000;
                 else s = parseInt(s,10);
 
@@ -272,6 +257,11 @@ function Slideshow(container,options){
                     },s);
                 }
             }
+
+            function endTransition(){
+                slideshow.inTransition = false;
+                slideshow.emit('transition-end',slide[current],current);
+            }
             
             navItems[ix].className = "active navItem";
 
@@ -279,12 +269,6 @@ function Slideshow(container,options){
         }
     }
 
-    function getStyleProperty(prop){
-        if(!prefixProp.hasOwnProperty(prop))
-            prefixProp[prop] = Prefix(prop,true);
-
-        return prefixProp[prop];
-    }
 
 }());
 

@@ -65,19 +65,20 @@
 			console.log("mySlides prev");
 		}).on('transition',function(slide, x){
 			console.log("mySlides transition", slide, x);
-		}).on('transition-end',function(slide, x){
-			console.log("mySlides transition-ended", slide, x);
 		})
 
 		$(mySlides.nextId).on('click',function(){
-			mySlides.next();
+			console.log("clicked next");
+			mySlides.next();	
 		});
 		
 		$(mySlides.prevId).on('click',function(){
+			console.log("clicked prev");
 			mySlides.prev();
 		});
 
 		$(mySlides.navId).on('click',function(e){
+			console.log("clicked nav", e.target.id);
 			mySlides.show(e.target.id);
 		});
 	};
