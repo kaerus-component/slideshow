@@ -257,11 +257,6 @@ function Slideshow(container,options){
                     },s);
                 }
             }
-
-            function endTransition(){
-                slideshow.inTransition = false;
-                slideshow.emit('transition-end',slide[current],current);
-            }
             
             navItems[ix].className = "active navItem";
 
