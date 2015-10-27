@@ -2,14 +2,10 @@
     "name": "slideshow",
     "version": "0.3.0",
     "description": "Slideshow",
-    "repo": "kaerus-component/slideshow",
+    "repository": "kaerus-component/slideshow",
     "styles": [
 	"style.css"
     ],
-    "dependencies":{
-	"kaerus-component/emitter":"*",
-	"jkroso/prefix":"*"
-    },
     "devDependencies": {
 	"duo": "~0.11.2"
     },

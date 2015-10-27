@@ -1,19 +1,13 @@
+DUO = ./node_modules/.bin/duo
+
 all: build
 
-build: dependencies standalone
-	@echo "Building component "
-	@component build -v
-
-standalone: 
-	@echo "Building standalone version"
-	@component build -v -n slideshow -s Slideshow
+build:	
+	@echo "Building component"
+	@$(DUO) *.{js,css} -s slideshow
 
 gem: standalone
 	@make -C ./gem all
-
-dependencies:
-	@component install 
-	@component convert template.html   
 
 distclean:
 	@echo "Cleaning upp files"
@@ -22,5 +16,4 @@ distclean:
 	@rm -rf ./build
 	@make -C ./gem distclean
 
-
-.PHONY: all
+.PHONY: build
