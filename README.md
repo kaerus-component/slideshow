@@ -12,7 +12,7 @@ component install kaerus-component/slideshow
 build from source
 =================
 You need component.js to bundle the source files.
-As a prerequisite run ```npm i component -g``` if you don't alreadhy have ```component``` installed.
+As a prerequisite run ```npm i component -g``` if you don't already have ```component``` installed.
 
 Then run ```make``` to install the dependencies and build into ```./build```
 
